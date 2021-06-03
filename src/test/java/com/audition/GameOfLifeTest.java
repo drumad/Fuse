@@ -38,7 +38,7 @@ public class GameOfLifeTest {
     }
 
     @Test
-    public void test_gameOfLife_emptyYCells_returnEmpty() {
+    public void test_gameOfLife_emptyXCells_returnEmpty() {
 
         char[][] cells = new char[1][0];
 

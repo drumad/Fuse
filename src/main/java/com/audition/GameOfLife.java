@@ -1,6 +1,7 @@
 package com.audition;
 
 import com.audition.util.FileReaderUtil;
+import com.audition.util.GridUtil;
 
 import java.io.IOException;
 
@@ -8,60 +9,28 @@ public class GameOfLife {
 
     /**
      * Analyzes the cells
+     *
      * @param cells
      * @return
      */
     public String gameOfLife(char[][] cells) {
 
-        if (cells == null) {
+        if (!GridUtil.isValid(cells)) {
             return "";
         }
 
-        if (cells.length == 0) {
-            return "";
-        }
-
-        if (cells[0].length == 0) {
-            return "";
-        }
-
+        int live;
         StringBuffer buffer = new StringBuffer();
 
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
 
-                int live = 0;
-
                 char c = cells[i][j];
 
-                // Check neighbor cells
-                if (isAlive(cells, i-1, j)) {
-                    live++;
-                }
-                if (isAlive(cells, i-1, j+1)) {
-                    live++;
-                }
-                if (isAlive(cells, i, j+1)) {
-                    live++;
-                }
-                if (isAlive(cells, i+1, j+1)) {
-                    live++;
-                }
-                if (isAlive(cells, i+1, j)) {
-                    live++;
-                }
-                if (isAlive(cells, i+1, j-1)) {
-                    live++;
-                }
-                if (isAlive(cells, i, j-1)) {
-                    live++;
-                }
-                if (isAlive(cells, i-1, j-1)) {
-                    live++;
-                }
+                live = GridUtil.countCharacterAroundCell('*', cells, i, j);
 
                 // Will the cell survive
-                if (isAlive(cells, i, j)) {
+                if (GridUtil.checkCharacter('*', cells, i, j)) {
 
                     if (live == 2 || live == 3) {
                         // still alive
@@ -70,6 +39,7 @@ public class GameOfLife {
                         // dies
                         buffer.append('.');
                     }
+
                 // Will the cell resurrect
                 } else {
 
@@ -88,15 +58,6 @@ public class GameOfLife {
         return buffer.toString().trim();
     }
 
-    private boolean isAlive(char[][] cells, int i, int j) {
-
-        if (i < 0 || i >= cells.length || j < 0 || j >= cells[i].length) {
-            return false;
-        }
-
-        return cells[i][j] == '*';
-    }
-
     /**
      * Starts the game of life. Reads through GameOfLife.txt.
      *
@@ -112,26 +73,37 @@ public class GameOfLife {
 
         String[] split = input.split("[ \n]");
         char[][] cells;
+        int y;
+        int x;
+        int index = 0;
+        int generation = 1;
+        String output = "";
 
-        int y = Integer.parseInt(split[0]);
-        int x = Integer.parseInt(split[1]);
+        while (true) {
+            y = Integer.parseInt(split[index++]);
+            x = Integer.parseInt(split[index++]);
 
-        cells = new char[y][];
-        char[] row;
-
-        for (int i = 0; i < y; i++) {
-            cells[i] = new char[x];
-            row = split[i+2].toCharArray();
-
-            // If a row in the text field has more than the expected characters, it should only take the /x/ number of rows.
-            for (int j = 0; j < x; j++) {
-                cells[i][j] = row[j];
+            if (y == 0 || x == 0) {
+                break;
             }
+
+            cells = new char[y][];
+            char[] row;
+
+            for (int i = 0; i < y; i++) {
+                cells[i] = new char[x];
+                row = split[index++].toCharArray();
+
+                // If a row in the text field has more than the expected characters, it should only take the /x/ number of rows.
+                for (int j = 0; j < x; j++) {
+                    cells[i][j] = row[j];
+                }
+            }
+
+            output = "Generation " + ++generation + ":\n" + y + " " + x + "\n" + gameOfLife(cells);
+            System.out.println(output + "\n");
         }
 
-        String nextgen = "Generation 2:\n" + y + " " + x + "\n" + gameOfLife(cells);
-        System.out.println(nextgen);
-
-        return nextgen;
+        return output;
     }
 }
