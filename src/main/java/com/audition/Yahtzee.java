@@ -115,7 +115,14 @@ public class Yahtzee {
                     Arrays.stream(dice).boxed().collect(Collectors.groupingBy(e -> e, Collectors.reducing(0, e -> 1, Integer::sum)));
 
                 if (category == Category.FULL_HOUSE) {
-                    score = getScoreOfAKind(map, 3) + getScoreOfAKind(map, 2);
+                    if (map.size() == 2 && map.containsValue(3) && map.containsValue(2)) {
+                        score = getScoreOfAKind(map, 3);
+
+                        // Remove the three of a kind match so the pair search won't double count.
+                        map.entrySet().removeIf(e -> e.getValue() == 3);
+
+                        score += getScoreOfAKind(map, 2);
+                    }
                 } else if (category == Category.YAHTZEE) {
                     score = map.size() == 1 ? 50 : 0;
                 } else {
@@ -123,8 +130,14 @@ public class Yahtzee {
                 }
                 break;
             case SMALL_STRAIGHT:
+                if (Arrays.stream(dice).distinct().count() == 5) {
+                    score = getSmallStraightScore(dice);
+                }
+                break;
             case LARGE_STRAIGHT:
-                score = getStraightScore(dice);
+                if (Arrays.stream(dice).distinct().count() == 5) {
+                    score = getLargeStraightScore(dice);
+                }
                 break;
             case CHANCE:
                 score = getChanceScore(dice);
@@ -137,30 +150,9 @@ public class Yahtzee {
         return score;
     }
 
-    public int getScoreOfAKind(Map<Integer, Integer> map, int kind) {
-
-        Integer sum = map.entrySet().stream().filter(e -> e.getValue() == kind).mapToInt(e -> e.getKey() * kind).sum();
-
-        return sum;
-    }
-
-    public int getStraightScore(int[] diceRolls) {
-
-        Integer sum = getChanceScore(diceRolls);
-
-        return sum == 15 || sum == 20 ? sum : 0;
-    }
-
     public int getTotalScore() {
 
         return scorecard.values().stream().mapToInt(Integer::intValue).sum();
-    }
-
-    private String generateDashes(String s, int maxSpaces) {
-
-        int reps = maxSpaces - s.length();
-
-        return " " + IntStream.range(0, reps).mapToObj(i -> "-").collect(Collectors.joining());
     }
 
     public Integer getCategoryScore(Category category) {
@@ -230,6 +222,32 @@ public class Yahtzee {
             dice[to] = temp;
         }
         incrementKeeps();
+    }
+
+    private int getScoreOfAKind(Map<Integer, Integer> map, int kind) {
+
+        return map.entrySet().stream().filter(e -> e.getValue() >= kind).mapToInt(e -> e.getKey() * kind * (e.getValue() / kind)).sum();
+    }
+
+    private int getSmallStraightScore(int[] diceRolls) {
+
+        Integer sum = getChanceScore(diceRolls);
+
+        return sum == 15 ? sum : 0;
+    }
+
+    private int getLargeStraightScore(int[] diceRolls) {
+
+        Integer sum = getChanceScore(diceRolls);
+
+        return sum == 20 ? sum : 0;
+    }
+
+    private String generateDashes(String s, int maxSpaces) {
+
+        int reps = maxSpaces - s.length();
+
+        return " " + IntStream.range(0, reps).mapToObj(i -> "-").collect(Collectors.joining());
     }
 
     public static void main(String[] args) throws NumberFormatException, InterruptedException {
