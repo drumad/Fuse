@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 
 public class Yahtzee {
 
-    private enum Category {
+    protected enum Category {
         ONES(1),
         TWOS(2),
         THREES(3),
@@ -31,13 +31,13 @@ public class Yahtzee {
     }
 
 
-    private Map<Category, Integer> scorecard;
+    protected Map<Category, Integer> scorecard;
 
-    private int[] dice;
+    protected int[] dice;
 
-    private int keeps;
+    protected int keeps;
 
-    private int rolls;
+    protected int rolls;
 
     public Yahtzee() {
 
@@ -47,73 +47,14 @@ public class Yahtzee {
         keeps = 0;
     }
 
-    public boolean isCategoryAvailable(Category category) {
-
-        return scorecard.get(category) == null;
-    }
-
     public boolean areCategoriesAvailable() {
 
         return scorecard.size() < Category.values().length;
     }
 
-    public void setScore(Category category, int score) {
+    public boolean isCategoryAvailable(Category category) {
 
-        scorecard.put(category, score);
-    }
-
-    public Integer getCategoryScore(Category category) {
-
-        Integer score = scorecard.get(category);
-
-        return score == null ? 0 : score;
-    }
-
-    public int getRolls() {
-
-        return rolls;
-    }
-
-    public void rollAllDice() {
-
-        rollDice(5);
-    }
-
-    public void rollDice(int numOfDice) {
-
-        rolls++;
-        int[] temp = new Random().ints(numOfDice, 1, 7).toArray();
-        int index = dice.length - numOfDice;
-
-        for (int i = 0; i < temp.length; i++) {
-            dice[index++] = temp[i];
-        }
-    }
-
-    public void resetRolls() {
-
-        rolls = 0;
-        keeps = 0;
-    }
-
-    public void incrementKeeps() {
-
-        keeps++;
-    }
-
-    public int getDie(int index) {
-
-        return dice[index];
-    }
-
-    public void swapDice(int from, int to) {
-
-        if (from != to) {
-            int temp = dice[from];
-            dice[from] = dice[to];
-            dice[to] = temp;
-        }
-        incrementKeeps();
+        return scorecard.get(category) == null;
     }
 
     public char getDieCharacter(int value) {
@@ -136,31 +77,19 @@ public class Yahtzee {
         return '\0';
     }
 
-    public String getDieStringFromIndex(int index) {
+    public int getCategoryScore(int[] dice, int toFind) {
 
-        return getDieCharacter(dice[index]) + " (" + dice[index] + ")";
+        return Arrays.stream(dice).filter(i -> i == toFind).sum();
     }
 
-    public String getDiceList() {
+    public int getChanceScore(int[] diceRolls) {
 
-        return IntStream.range(0, 5).mapToObj(i -> (i > keeps - 1 ? (i + 1) : " ") + " : " + getDieStringFromIndex(i))
-                        .collect(Collectors.joining("\n"));
+        return Arrays.stream(diceRolls).sum();
     }
 
-    public String getCategoriesList() {
+    public int getRolls() {
 
-        Category[] categories = Category.values();
-
-        return IntStream.range(0, categories.length).mapToObj(
-            i -> (isCategoryAvailable(categories[i]) ? (i + 1) : "") + "\t- " + categories[i] + generateDashes(categories[i].name(), 16)
-                + "| Score: " + getCategoryScore(categories[i])).collect(Collectors.joining("\n"));
-    }
-
-    private String generateDashes(String s, int maxSpaces) {
-
-        int reps = maxSpaces - s.length();
-
-        return " " + IntStream.range(0, reps).mapToObj(i -> "-").collect(Collectors.joining());
+        return rolls;
     }
 
     public int getScore(Category category) {
@@ -208,9 +137,11 @@ public class Yahtzee {
         return score;
     }
 
-    public int getCategoryScore(int[] dice, int toFind) {
+    public int getScoreOfAKind(Map<Integer, Integer> map, int kind) {
 
-        return Arrays.stream(dice).filter(i -> i == toFind).sum();
+        Integer sum = map.entrySet().stream().filter(e -> e.getValue() == kind).mapToInt(e -> e.getKey() * kind).sum();
+
+        return sum;
     }
 
     public int getStraightScore(int[] diceRolls) {
@@ -220,24 +151,86 @@ public class Yahtzee {
         return sum == 15 || sum == 20 ? sum : 0;
     }
 
-    public int getScoreOfAKind(Map<Integer, Integer> map, int kind) {
-
-        Integer sum = map.entrySet().stream().filter(e -> e.getValue() == kind).mapToInt(e -> e.getKey() * kind).sum();
-
-        return sum;
-    }
-
-    public int getChanceScore(int[] diceRolls) {
-
-        return Arrays.stream(diceRolls).sum();
-    }
-
     public int getTotalScore() {
 
         return scorecard.values().stream().mapToInt(Integer::intValue).sum();
     }
 
+    private String generateDashes(String s, int maxSpaces) {
 
+        int reps = maxSpaces - s.length();
+
+        return " " + IntStream.range(0, reps).mapToObj(i -> "-").collect(Collectors.joining());
+    }
+
+    public Integer getCategoryScore(Category category) {
+
+        Integer score = scorecard.get(category);
+
+        return score == null ? 0 : score;
+    }
+
+    public String getCategoriesList() {
+
+        Category[] categories = Category.values();
+
+        return IntStream.range(0, categories.length).mapToObj(
+            i -> (isCategoryAvailable(categories[i]) ? (i + 1) : "") + "\t- " + categories[i] + generateDashes(categories[i].name(), 16)
+                + "| Score: " + getCategoryScore(categories[i])).collect(Collectors.joining("\n"));
+    }
+
+    public String getDiceList() {
+
+        return IntStream.range(0, 5).mapToObj(i -> (i > keeps - 1 ? (i + 1) : " ") + " : " + getDieStringFromIndex(i))
+                        .collect(Collectors.joining("\n"));
+    }
+
+    public String getDieStringFromIndex(int index) {
+
+        return getDieCharacter(dice[index]) + " (" + dice[index] + ")";
+    }
+
+    public void incrementKeeps() {
+
+        keeps++;
+    }
+
+    public void resetRolls() {
+
+        rolls = 0;
+        keeps = 0;
+    }
+
+    public void rollAllDice() {
+
+        rollDice(5);
+    }
+
+    public void rollDice(int numOfDice) {
+
+        rolls++;
+        int[] temp = new Random().ints(numOfDice, 1, 7).toArray();
+        int index = dice.length - numOfDice;
+
+        for (int i = 0; i < temp.length; i++) {
+            dice[index++] = temp[i];
+        }
+    }
+
+    public void setScore(Category category, int score) {
+
+        scorecard.put(category, score);
+    }
+
+    public void swapDice(int from, int to) {
+
+        if (from != to) {
+            int temp = dice[from];
+            dice[from] = dice[to];
+            dice[to] = temp;
+        }
+        incrementKeeps();
+    }
 
     public static void main(String[] args) throws NumberFormatException, InterruptedException {
 
