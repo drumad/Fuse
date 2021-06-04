@@ -298,8 +298,8 @@ public class Yahtzee {
         int[] temp = new Random().ints(numOfDice, 1, 7).toArray();
         int index = dice.length - numOfDice;
 
-        for (int i = 0; i < temp.length; i++) {
-            dice[index++] = temp[i];
+        for (int die : temp) {
+            dice[index++] = die;
         }
     }
 
@@ -337,14 +337,14 @@ public class Yahtzee {
 
     private int getSmallStraightScore(int[] diceRolls) {
 
-        Integer sum = getChanceScore(diceRolls);
+        int sum = getChanceScore(diceRolls);
 
         return sum == 15 ? sum : 0;
     }
 
     private int getLargeStraightScore(int[] diceRolls) {
 
-        Integer sum = getChanceScore(diceRolls);
+        int sum = getChanceScore(diceRolls);
 
         return sum == 20 ? sum : 0;
     }
@@ -458,7 +458,7 @@ public class Yahtzee {
                                 if (selection - 1 == swapIndex) {
                                     this.incrementKeeps();
                                     swapIndex++;
-                                } else if (selection - 1 > swapIndex && selection <= 5) {
+                                } else if (selection - 1 > swapIndex) {
                                     this.swapDice(swapIndex, selection - 1);
                                     swapIndex++;
                                 } else {
@@ -509,10 +509,8 @@ public class Yahtzee {
      * You can play if you want. :)
      *
      * @param args
-     * @throws NumberFormatException
-     * @throws InterruptedException
      */
-    public static void main(String[] args) throws NumberFormatException {
+    public static void main(String[] args) {
 
         Yahtzee yahtzee = new Yahtzee();
 
