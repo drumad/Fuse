@@ -5,7 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.util.Arrays;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
@@ -421,7 +422,8 @@ public class YahtzeeTest {
 
         yahtzee.swapDice(4, 1);
 
-        assertEquals(Arrays.toString(newDice), Arrays.toString(yahtzee.dice));
+        assertNotSame(newDice, yahtzee.dice);
+        assertArrayEquals(newDice, yahtzee.dice);
     }
 
     @Test
@@ -461,5 +463,204 @@ public class YahtzeeTest {
     public void test_getAvailableCategories() {
 
         assertNotNull(yahtzee.getCategoriesList());
+    }
+
+    @Test
+    public void test_start_happyPath_allRerolls() throws InterruptedException{
+
+        String input = "1\n\n2\n\n\n3\n\n\n4\n\n\n5\n\n\n6\n\n\n7\n\n\n8\n\n\n9\n\n\n10\n\n\n11\n\n\n12\n\n\n13\n\n\n14\n\n\n";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(14, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_happyPath_endPrematurely_smallx() throws InterruptedException{
+
+        String input = "1\n\n2\n\n\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(2, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_happyPath_endPrematurely_capitalX() throws InterruptedException{
+
+        String input = "1\n\n2\n\n\nX";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(2, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_happyPath_rerolls_endHalfway() throws InterruptedException{
+
+        String input = "7\n\n\n8\n\n\n9\n\n\n10\n\n\n1\n\n\n3\n\n\n13\n\n\n14\n\n\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(8, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_happyPath_endDuringReroll_smallx() throws InterruptedException{
+
+        String input = "1\n\n2\n\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(1, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_happyPath_endDuringReroll_capitalX() throws InterruptedException{
+
+        String input = "1\n\n2\n\nX";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(1, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_selectAlreadySelected() throws InterruptedException{
+
+        String input = "1\n\n1\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(1, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_allEnters() throws InterruptedException{
+
+        String input = "\n\n\n\n\n\n\n\n\n\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(0, yahtzee.scorecard.size());
+    }
+
+
+
+    @Test
+    public void test_start_keepDice_allDice() throws InterruptedException{
+
+        String input = "1\n1\r2\r3\r4\r5\rx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(1, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_keepDice_justOneAndEnd() throws InterruptedException{
+
+        String input = "1\n1\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(0, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_keepDice_alreadyKeeping() throws InterruptedException{
+
+        String input = "1\n2\n1\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(0, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_keepDice_invalidSelection() throws InterruptedException{
+
+        String input = "a\n-1\n1\n12\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(0, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_invalidSelections() throws InterruptedException{
+
+        String input = "a\n1\nasdf\nx";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start(0);
+
+        System.setIn(System.in);
+
+        assertEquals(0, yahtzee.scorecard.size());
+    }
+
+    @Test
+    public void test_start_happyPath_forCoverage() {
+
+        // For more coverage. Test takes approximately 27 seconds due to Thread.sleep().
+        String input = "1\n\n2\n\n\n3\n\n\n4\n\n\n5\n\n\n6\n\n\n7\n\n\n8\n\n\n9\n\n\n10\n\n\n11\n\n\n12\n\n\n13\n\n\n14\n\n\n";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+
+        yahtzee.start();
+
+        System.setIn(System.in);
+
+        assertEquals(14, yahtzee.scorecard.size());
     }
 }

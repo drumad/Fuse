@@ -363,10 +363,26 @@ public class Yahtzee {
         return " " + IntStream.range(0, reps).mapToObj(i -> "-").collect(Collectors.joining());
     }
 
+    /**
+     * Entry point to play yahtzee. Default wait time is 250 milliseconds.
+     */
+    public void start() {
 
-    public static void main(String[] args) throws NumberFormatException, InterruptedException {
+        try {
+            this.start(250);
+        } catch (InterruptedException e) {
+            // Do nothing.
+        }
+    }
 
-        Yahtzee yahtzee = new Yahtzee();
+    /**
+     * Can specify a wait time for user-friendliness when playing.
+     *
+     * @param waitTime The wait time. It will be used while re-rolling, and 4x its value when a category is finished.
+     * @throws InterruptedException For the Thread.wait() calls.
+     */
+    protected void start(int waitTime) throws InterruptedException {
+
         String response;
 
         Scanner scanner = new Scanner(System.in);
@@ -376,9 +392,9 @@ public class Yahtzee {
         System.out.println("Input 'X' at any time to end application. ");
         System.out.println("=========================================");
 
-        while (yahtzee.areCategoriesAvailable()) {
-            System.out.println("\nCATEGORIES:\n" + yahtzee.getCategoriesList());
-            System.out.println("\nTOTAL SCORE: " + yahtzee.getTotalScore());
+        while (this.areCategoriesAvailable()) {
+            System.out.println("\nCATEGORIES:\n" + this.getCategoriesList());
+            System.out.println("\nTOTAL SCORE: " + this.getTotalScore());
             System.out.print("\nPlease select category: ");
             response = scanner.nextLine();
 
@@ -394,29 +410,29 @@ public class Yahtzee {
             try {
                 selection = Integer.parseInt(response);
             } catch (NumberFormatException e) {
-                System.err.println("Invalid selection\n");
+                System.err.println("Invalid selection: " + response + "\n");
                 continue;
             }
             Category[] categories = Category.values();
 
             // Error checking category selection
             if (selection < 1 || selection > categories.length) {
-                System.err.println("Invalid selection\n");
+                System.err.println("Invalid selection: " + response + "\n");
                 continue;
             }
             Category category = categories[selection - 1];
 
-            if (yahtzee.isCategoryAvailable(category)) {
+            if (this.isCategoryAvailable(category)) {
 
-                yahtzee.rollAllDice();
+                this.rollAllDice();
                 int swapIndex = 0;
-                while (yahtzee.getRolls() < 3) {
+                while (this.getRolls() < 3) {
 
-                    Thread.sleep(250);
+                    Thread.sleep(waitTime);
 
                     while (swapIndex < 5) {
-                        System.out.println(
-                            "\nRoll#" + yahtzee.getRolls() + ":" + " (Category: " + category.formatted + ")\n" + yahtzee.getDiceList());
+                        System.out
+                            .println("\nRoll#" + this.getRolls() + ":" + " (Category: " + category.formatted + ")\n" + this.getDiceList());
                         System.out.print("\nKeep which dice (" + (swapIndex + 1) + "-5) [Leave blank to re-roll]: ");
                         response = scanner.nextLine();
 
@@ -424,31 +440,31 @@ public class Yahtzee {
                             return;
                         } else if (response.equals("")) {
                             System.out.println("\nRe-rolling " + (5 - swapIndex) + ((5 - swapIndex) == 1 ? " die" : " dice") + "..");
-                            Thread.sleep(250);
+                            Thread.sleep(waitTime);
                             break;
                         } else {
                             try {
                                 selection = Integer.parseInt(response);
                             } catch (NumberFormatException e) {
-                                System.err.println("Invalid selection\n");
+                                System.err.println("Invalid selection: " + response + "\n");
                                 continue;
                             }
 
                             if (selection < 1 || selection > 5) {
-                                System.err.println("Invalid selection\n");
+                                System.err.println("Invalid selection: " + response + "\n");
                                 continue;
                             } else {
                                 // swapping dice for kept die
                                 if (selection - 1 == swapIndex) {
-                                    yahtzee.incrementKeeps();
+                                    this.incrementKeeps();
                                     swapIndex++;
                                 } else if (selection - 1 > swapIndex && selection <= 5) {
-                                    yahtzee.swapDice(swapIndex, selection - 1);
+                                    this.swapDice(swapIndex, selection - 1);
                                     swapIndex++;
                                 } else {
                                     // Invalid selection
                                     System.err.println(
-                                        "Already keeping = " + selection + " : " + yahtzee.getDieStringFromIndex(selection - 1) + "\n");
+                                        "Already keeping = " + selection + " : " + this.getDieStringFromIndex(selection - 1) + "\n");
                                     continue;
                                 }
                             }
@@ -461,17 +477,17 @@ public class Yahtzee {
                         break;
                     }
 
-                    yahtzee.rollDice(rerollCount);
+                    this.rollDice(rerollCount);
                 }
 
                 // Get the score!
-                System.out.println("Final Roll:\n" + yahtzee.getDiceList());
+                System.out.println("Final Roll:\n" + this.getDiceList());
 
-                int score = yahtzee.determineScore(category);
-                yahtzee.setScore(category, score);
+                int score = this.determineScore(category);
+                this.setScore(category, score);
                 System.out.println("Score for " + category.formatted + " category: " + score);
-                Thread.sleep(1000);
-                yahtzee.resetRolls();
+                Thread.sleep(waitTime * 4);
+                this.resetRolls();
 
             } else {
                 System.err.println("Invalid selection: " + selection + ". Category already has a score.\n");
@@ -480,12 +496,26 @@ public class Yahtzee {
         }
 
         // GAME IS DONE!
-        System.out.println(yahtzee.getCategoriesList());
+        System.out.println(this.getCategoriesList());
         System.out.println("===================================================");
         System.out.println("CONGRATULATIONS! YOU HAVE FINISHED PLAYING YAHTZEE!");
         System.out.println("               Your final score is");
-        System.out.println("                      " + yahtzee.getTotalScore());
+        System.out.println("                      " + this.getTotalScore());
         System.out.println("===================================================");
+    }
 
+
+    /**
+     * You can play if you want. :)
+     *
+     * @param args
+     * @throws NumberFormatException
+     * @throws InterruptedException
+     */
+    public static void main(String[] args) throws NumberFormatException {
+
+        Yahtzee yahtzee = new Yahtzee();
+
+        yahtzee.start();
     }
 }
