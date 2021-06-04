@@ -4,29 +4,37 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * The Yahtzee class for the code-kata.
+ *
+ * @author andrewmadrazo
+ */
 public class Yahtzee {
 
     protected enum Category {
-        ONES(1),
-        TWOS(2),
-        THREES(3),
-        FOURS(4),
-        FIVES(5),
-        SIXES(6),
-        PAIR(2),
-        THREE_KIND(3),
-        FOUR_KIND(4),
-        SMALL_STRAIGHT(0),
-        LARGE_STRAIGHT(0),
-        FULL_HOUSE(0),
-        YAHTZEE(0),
-        CHANCE(0);
+        ONES(1, "Ones"),
+        TWOS(2, "Twos"),
+        THREES(3, "Threes"),
+        FOURS(4, "Fours"),
+        FIVES(5, "Fives"),
+        SIXES(6, "Sixes"),
+        PAIR(2, "Pair"),
+        THREE_KIND(3, "Three of a Kind"),
+        FOUR_KIND(4, "Four of a Kind"),
+        SMALL_STRAIGHT(0, "Small Straight"),
+        LARGE_STRAIGHT(0, "Large Straight"),
+        FULL_HOUSE(0, "Full House"),
+        YAHTZEE(0, "Yahtzee"),
+        CHANCE(0, "Chance");
 
         public final int value;
 
-        Category(int value) {
+        public final String formatted;
+
+        Category(int value, String formatted) {
 
             this.value = value;
+            this.formatted = formatted;
         }
     }
 
@@ -39,6 +47,9 @@ public class Yahtzee {
 
     protected int rolls;
 
+    /**
+     * Constructor. Initializes the scorecard, the dice, and sets the rolls and keeps to zero.
+     */
     public Yahtzee() {
 
         scorecard = new HashMap<>(Category.values().length);
@@ -47,16 +58,33 @@ public class Yahtzee {
         keeps = 0;
     }
 
+    /**
+     * Checks if any categories are available.
+     *
+     * @return True if any are available, false if none are available.
+     */
     public boolean areCategoriesAvailable() {
 
         return scorecard.size() < Category.values().length;
     }
 
+    /**
+     * Checks if a category has no score yet.
+     *
+     * @param category The category key.
+     * @return True if available, false if otherwise.
+     */
     public boolean isCategoryAvailable(Category category) {
 
         return scorecard.get(category) == null;
     }
 
+    /**
+     * Gets the die character based on the specific value.
+     *
+     * @param value Values 1 to 6 only.
+     * @return The special character for the die.
+     */
     public char getDieCharacter(int value) {
 
         switch (value) {
@@ -77,22 +105,46 @@ public class Yahtzee {
         return '\0';
     }
 
-    public int getCategoryScore(int[] dice, int toFind) {
+    /**
+     * Finds the specified int value and sums them up.
+     *
+     * @param dice   The dice roll.
+     * @param toFind The value to match.
+     * @return The int value of the sum.
+     */
+    public int getSumOfValue(int[] dice, int toFind) {
 
         return Arrays.stream(dice).filter(i -> i == toFind).sum();
     }
 
+    /**
+     * Sums up all the dice.
+     *
+     * @param diceRolls Any dice roll.
+     * @return The int value of the sum.
+     */
     public int getChanceScore(int[] diceRolls) {
 
         return Arrays.stream(diceRolls).sum();
     }
 
+    /**
+     * Gets the count of rolls.
+     *
+     * @return The int value of the rolls.
+     */
     public int getRolls() {
 
         return rolls;
     }
 
-    public int getScore(Category category) {
+    /**
+     * Determines the score based on the current dice roll and the specified category,
+     *
+     * @param category The category to determine the score.
+     * @return The int value of the score.
+     */
+    public int determineScore(Category category) {
 
         int score = 0;
 
@@ -104,7 +156,7 @@ public class Yahtzee {
             case FOURS:
             case FIVES:
             case SIXES:
-                score = getCategoryScore(dice, category.value);
+                score = getSumOfValue(dice, category.value);
                 break;
             case PAIR:
             case THREE_KIND:
@@ -150,54 +202,96 @@ public class Yahtzee {
         return score;
     }
 
+    /**
+     * Gets the total score.
+     *
+     * @return The int value of the total score.
+     */
     public int getTotalScore() {
 
         return scorecard.values().stream().mapToInt(Integer::intValue).sum();
     }
 
-    public Integer getCategoryScore(Category category) {
+    /**
+     * Get the score of the specified category.
+     *
+     * @param category The category key.
+     * @return The Integer value of the score.
+     */
+    public Integer getScore(Category category) {
 
         Integer score = scorecard.get(category);
 
         return score == null ? 0 : score;
     }
 
+    /**
+     * Lists all the categories. Also performs an evaluation if any of the categories have already been scored,
+     * as well as the score. Proper spacing is also being followed for readability.
+     *
+     * @return String of the list of categories.
+     */
     public String getCategoriesList() {
 
         Category[] categories = Category.values();
 
         return IntStream.range(0, categories.length).mapToObj(
-            i -> (isCategoryAvailable(categories[i]) ? (i + 1) : "") + "\t- " + categories[i] + generateDashes(categories[i].name(), 16)
-                + "| Score: " + getCategoryScore(categories[i])).collect(Collectors.joining("\n"));
+            i -> (isCategoryAvailable(categories[i]) ? (i + 1) : "") + "\t- " + categories[i].formatted + generateDashes(
+                categories[i].formatted, 16) + "| Score: " + getScore(categories[i])).collect(Collectors.joining("\n"));
     }
 
+    /**
+     * Lists the current dice. Also performs an evaluation if any of the dice are being kept.
+     *
+     * @return String of the list of current rolled dice.
+     */
     public String getDiceList() {
 
         return IntStream.range(0, 5).mapToObj(i -> (i > keeps - 1 ? (i + 1) : " ") + " : " + getDieStringFromIndex(i))
                         .collect(Collectors.joining("\n"));
     }
 
+    /**
+     * For display purposes. This will return the die character and its value.
+     *
+     * @param index The index of the die.
+     * @return A String of the die character and its value.
+     */
     public String getDieStringFromIndex(int index) {
 
         return getDieCharacter(dice[index]) + " (" + dice[index] + ")";
     }
 
+    /**
+     * Increments the number of kept dice.
+     */
     public void incrementKeeps() {
 
         keeps++;
     }
 
+    /**
+     * Resets the rolls and the keeps to 0.
+     */
     public void resetRolls() {
 
         rolls = 0;
         keeps = 0;
     }
 
+    /**
+     * Roll all the dice at once. A convenience function.
+     */
     public void rollAllDice() {
 
         rollDice(5);
     }
 
+    /**
+     * A number of dice that will be rolled. This method also increments the number of rolls.
+     *
+     * @param numOfDice The number of dice to roll.
+     */
     public void rollDice(int numOfDice) {
 
         rolls++;
@@ -209,11 +303,23 @@ public class Yahtzee {
         }
     }
 
+    /**
+     * Puts the category score into the map.
+     *
+     * @param category The category key.
+     * @param score    The score value.
+     */
     public void setScore(Category category, int score) {
 
         scorecard.put(category, score);
     }
 
+    /**
+     * Swap 2 dice.
+     *
+     * @param from The source index
+     * @param to   The new index
+     */
     public void swapDice(int from, int to) {
 
         if (from != to) {
@@ -243,12 +349,20 @@ public class Yahtzee {
         return sum == 20 ? sum : 0;
     }
 
+    /**
+     * Generate a number of dashes based on the length of the string.
+     *
+     * @param s         The string to base the dashes from.
+     * @param maxSpaces The maximum number of dashes
+     * @return A string of dashes.
+     */
     private String generateDashes(String s, int maxSpaces) {
 
         int reps = maxSpaces - s.length();
 
         return " " + IntStream.range(0, reps).mapToObj(i -> "-").collect(Collectors.joining());
     }
+
 
     public static void main(String[] args) throws NumberFormatException, InterruptedException {
 
@@ -301,9 +415,9 @@ public class Yahtzee {
                     Thread.sleep(250);
 
                     while (swapIndex < 5) {
-                        System.out
-                            .println("\nRoll#" + yahtzee.getRolls() + ":" + " (Category: " + category + ")\n" + yahtzee.getDiceList());
-                        System.out.print("\nKeep which dice (" + (swapIndex + 1) + "-5) [Enter to re-roll]: ");
+                        System.out.println(
+                            "\nRoll#" + yahtzee.getRolls() + ":" + " (Category: " + category.formatted + ")\n" + yahtzee.getDiceList());
+                        System.out.print("\nKeep which dice (" + (swapIndex + 1) + "-5) [Leave blank to re-roll]: ");
                         response = scanner.nextLine();
 
                         if (response.trim().equalsIgnoreCase("x")) {
@@ -353,9 +467,9 @@ public class Yahtzee {
                 // Get the score!
                 System.out.println("Final Roll:\n" + yahtzee.getDiceList());
 
-                int score = yahtzee.getScore(category);
+                int score = yahtzee.determineScore(category);
                 yahtzee.setScore(category, score);
-                System.out.println("Score for " + category + " category: " + score);
+                System.out.println("Score for " + category.formatted + " category: " + score);
                 Thread.sleep(1000);
                 yahtzee.resetRolls();
 
@@ -370,7 +484,7 @@ public class Yahtzee {
         System.out.println("===================================================");
         System.out.println("CONGRATULATIONS! YOU HAVE FINISHED PLAYING YAHTZEE!");
         System.out.println("               Your final score is");
-        System.out.println("                          " + yahtzee.getTotalScore());
+        System.out.println("                      " + yahtzee.getTotalScore());
         System.out.println("===================================================");
 
     }
