@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -174,7 +173,7 @@ public class BowlingTest {
     @Test
     public void test_bowl() throws IOException {
 
-        // Open the file and
+        // Open the file and score the games
         bowling.bowl();
     }
 }
