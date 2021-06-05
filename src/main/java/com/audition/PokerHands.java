@@ -57,7 +57,7 @@ public class PokerHands {
 
     public int breakTie(Hand hand, String[] black, String[] white) {
 
-
+        return 0;
     }
 
     /**
