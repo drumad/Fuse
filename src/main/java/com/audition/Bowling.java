@@ -1,6 +1,11 @@
 package com.audition;
 
+import com.audition.util.FileReaderUtil;
+
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Code kata for Bowling
@@ -8,6 +13,27 @@ import java.util.Arrays;
  * @author andrewmadrazo
  */
 public class Bowling {
+
+    private Map<Character, Integer> scoreMap;
+
+    public Bowling() {
+
+        scoreMap = new HashMap<>();
+
+        scoreMap.put('-', 0);
+        scoreMap.put('1', 1);
+        scoreMap.put('2', 2);
+        scoreMap.put('3', 3);
+        scoreMap.put('4', 4);
+        scoreMap.put('5', 5);
+        scoreMap.put('6', 6);
+        scoreMap.put('7', 7);
+        scoreMap.put('8', 8);
+        scoreMap.put('9', 9);
+        scoreMap.put('x', 10);
+        scoreMap.put('X', 10);
+        scoreMap.put('/', 10);
+    }
 
     public int getScore(int[][] rolls) {
 
@@ -26,118 +52,69 @@ public class Bowling {
                 int roll = rolls[frame][i];
                 score[frame] += roll;
 
-                if (frame < 9) {
+                switch (i) {
 
-                    switch (i) {
+                    case 0:
+                        if (roll == 10) {
 
-                        case 0:
-                            if (score[frame] == 10) {
-
-                                strikeCount++;
-                                if (strike) {
-                                    score[frame - 1] += roll;
-                                    if (strikeCount > 2) {
-                                        // Turkey!
-                                        score[frame - 2] += roll;
-                                    }
-                                }
-                                strike = true;
-                            } else if (strike || spare) {
-
-                                spare = false;
+                            strikeCount++;
+                            if (strike || spare) {
                                 score[frame - 1] += roll;
-
                                 if (strikeCount > 2) {
-                                    // Chicken!
+                                    // Turkey!
                                     score[frame - 2] += roll;
                                 }
                             }
-                            break;
-                        case 1:
-                            if (score[frame] == 10) {
+                            strike = true;
+                        } else if (strike || spare) {
 
-                                if (strike) {
-                                    strike = false;
-                                    strikeCount = 0;
-                                    score[frame - 1] += roll;
-                                }
-                                spare = true;
-                            } else if (strike) {
-                                score[frame - 1] += roll;
-                                strike = false;
+                            spare = false;
+                            score[frame - 1] += roll;
 
+                            if (strikeCount > 2) {
+                                // Chicken!
+                                score[frame - 2] += roll;
                             }
-                            break;
-                        default:
-                            break;
+                        }
+                        break;
+                    case 1:
+                        if (score[frame] == 10) {
 
-                    }
-                } else {
-                    // Last frame logic!
-                    switch (i) {
-
-                        case 0:
-                            if (roll == 10) {
-
-                                strikeCount++;
-                                if (strike) {
-                                    score[frame - 1] += roll;
-                                    if (strikeCount > 2) {
-                                        // Turkey!
-                                        score[frame - 2] += roll;
-                                    }
-                                }
-                                strike = true;
-                            } else if (strike || spare) {
-
-                                spare = false;
-                                score[frame - 1] += roll;
-
-                                if (strikeCount > 2) {
-                                    // Chicken!
-                                    score[frame - 2] += roll;
-                                }
-                            }
-                            score[frame] += roll;
-                            break;
-                        case 1:
-                            if (roll == 10) {
-
-                                if (strike) {
-                                    strike = false;
-                                    strikeCount = 0;
-                                    score[frame - 1] += roll;
-                                }
-                                spare = true;
-                            } else if (strike) {
-                                score[frame - 1] += roll;
-                                spare = false;
+                            if (strike) {
                                 strike = false;
+                                if (frame < 9 || strikeCount > 2) {
+                                    // If turkey or not the last,
+                                    // add score to the previous frame.
+                                    score[frame - 1] += roll;
+                                }
                                 strikeCount = 0;
                             }
-                            score[frame] += roll;
-                            break;
-                        case 2:
-                            // Last roll
-                            if (roll == 10) {
-                                if (strike || spare) {
-                                    score[frame - 1] += roll;
-                                }
-                                if (strike) {
-                                    strikeCount++;
-                                    if (strikeCount > 2) {
-                                        // Turkey!
+                            spare = true;
+                        } else if (roll == 10) {
+
+                            if (strike) {
+                                strikeCount++;
+                                if (strikeCount > 2) {
+                                    // Turkey!
+                                    if (frame == 9) {
+                                        score[frame - 1] += roll;
+                                    } else {
                                         score[frame - 2] += roll;
                                     }
                                 }
                             }
-                            break;
-                        default:
-                            break;
 
-                    }
+                        } else if (strike) {
+
+                            score[frame - 1] += roll;
+                            strike = false;
+                            strikeCount = 0;
+                        }
+                        break;
+                    default:
+                        break;
+
                 }
-
             }
         }
 
@@ -154,25 +131,46 @@ public class Bowling {
 
         int[][] parsedRolls;
 
-        String[] frames = game.split(",");
-        int frameCount = frames.length;
+        String[] frames = game.split(" ");
+        int framesCount;
+        if (frames.length == 12) {
+            // There were strikes on the last frame.
+            frames[9] += frames[10] + frames[11];
+            framesCount = 10;
+        } else {
+            framesCount = frames.length;
+        }
         int index = 0;
 
-        parsedRolls = new int[frameCount][];
+        parsedRolls = new int[framesCount][];
 
-        for (String frame : frames) {
+        for (int i = 0; i < framesCount; i++) {
 
-            String[] rolls = frame.split(" ");
-            int[] parsedRoll = new int[rolls.length];
+            String frame = frames[i].trim();
+            int point;
+            boolean spare = false;
 
-            switch (rolls.length) {
+            int[] parsedRoll = new int[frame.length()];
+
+            switch (frame.length()) {
 
                 case 3:
-                    parsedRoll[2] = Integer.parseInt(rolls[2]);
+                    // Last frame!
+                    point = scoreMap.get(frame.charAt(2));
+                    parsedRoll[2] = point;
                 case 2:
-                    parsedRoll[1] = Integer.parseInt(rolls[1]);
+                    point = scoreMap.get(frame.charAt(1));
+                    if (point == 10 && frame.charAt(1) == '/') {
+                        spare = true;
+                    } else {
+                        parsedRoll[1] = point;
+                    }
                 case 1:
-                    parsedRoll[0] = Integer.parseInt(rolls[0]);
+                    point = scoreMap.get(frame.charAt(0));
+                    if (spare) {
+                        parsedRoll[1] = 10 - point;
+                    }
+                    parsedRoll[0] = point;
                 default:
                     parsedRolls[index++] = parsedRoll;
                     break;
@@ -180,5 +178,17 @@ public class Bowling {
         }
 
         return parsedRolls;
+    }
+
+    public void bowl() throws IOException {
+
+        String input = FileReaderUtil.readInputFile();
+        String[] games = input.split("\n");
+
+        for (String game : games) {
+
+            int score = getScore(parseRolls(game));
+            System.out.println(game + " = " + score);
+        }
     }
 }
