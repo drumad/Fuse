@@ -30,7 +30,6 @@ public class Bowling {
         scoreMap.put('7', 7);
         scoreMap.put('8', 8);
         scoreMap.put('9', 9);
-        scoreMap.put('x', 10);
         scoreMap.put('X', 10);
         scoreMap.put('/', 10);
     }
@@ -131,7 +130,7 @@ public class Bowling {
 
         int[][] parsedRolls;
 
-        String[] frames = game.split(" ");
+        String[] frames = game.toUpperCase().split(" ");
         int framesCount;
         if (frames.length == 12) {
             // There were strikes on the last frame.
