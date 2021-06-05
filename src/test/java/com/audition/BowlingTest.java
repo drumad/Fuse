@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -45,6 +46,16 @@ public class BowlingTest {
 
         String game = "X X X X X X X X X X X X";
         int[][] expected = {{10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}, {10}, {10, 10, 10}};
+        int[][] rolls = bowling.parseRolls(game);
+
+        assertArrayEquals(expected, rolls);
+    }
+
+    @Test
+    public void test_parseRolls_spareInLastRoll() {
+
+        String game = "9/ X 5/ X X 2/ 8/ 1/ X X 5/";
+        int[][] expected = {{9,1}, {10}, {5,5}, {10}, {10}, {2,8}, {8,2}, {1,9}, {10}, {10, 5, 5}};
         int[][] rolls = bowling.parseRolls(game);
 
         assertArrayEquals(expected, rolls);
@@ -108,6 +119,46 @@ public class BowlingTest {
         int[][] rolls = bowling.parseRolls(game);
 
         assertEquals(134, bowling.getScore(rolls));
+    }
+
+    @Test
+    public void test_getScore_spareInLastRoll() {
+
+        String game = "9/ X 5/ X X 2/ 8/ 1/ X X 5/";
+
+        int[][] rolls = bowling.parseRolls(game);
+
+        assertEquals(196, bowling.getScore(rolls));
+    }
+
+    @Test
+    public void test_getScore_all9s() {
+
+        String game = "9- 9- 9- 9- 9- 9- 9- 9- 9- 9-";
+
+        int [][] rolls = bowling.parseRolls(game);
+
+        assertEquals(90, bowling.getScore(rolls));
+    }
+
+    @Test
+    public void test_getScore_missSpare() {
+
+        String game = "-/ -/ -/ -/ -/ -/ -/ -/ -/ -/-";
+
+        int [][] rolls = bowling.parseRolls(game);
+
+        assertEquals(100, bowling.getScore(rolls));
+    }
+
+    @Test
+    public void test_getScore_chickenMidGame() {
+
+        String game = "9- 52 -8 8/ X X 2/ 81 5- 45";
+
+        int[][] rolls = bowling.parseRolls(game);
+
+        assertEquals(127, bowling.getScore(rolls));
     }
 
     @Test

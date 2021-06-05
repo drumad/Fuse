@@ -70,7 +70,7 @@ public class Bowling {
                             spare = false;
                             score[frame - 1] += roll;
 
-                            if (strikeCount > 2) {
+                            if (strikeCount >= 2) {
                                 // Chicken!
                                 score[frame - 2] += roll;
                             }
@@ -132,9 +132,9 @@ public class Bowling {
 
         String[] frames = game.toUpperCase().split(" ");
         int framesCount;
-        if (frames.length == 12) {
-            // There were strikes on the last frame.
-            frames[9] += frames[10] + frames[11];
+        if (frames.length > 10) {
+            // There was a strike/spare on the last frame.
+            frames[9] += frames[10] + (frames.length == 12 ? frames[11] : "");
             framesCount = 10;
         } else {
             framesCount = frames.length;
@@ -146,30 +146,39 @@ public class Bowling {
         for (int i = 0; i < framesCount; i++) {
 
             String frame = frames[i].trim();
-            int point;
+            int pins;
             boolean spare = false;
 
             int[] parsedRoll = new int[frame.length()];
+            char c;
 
             switch (frame.length()) {
 
                 case 3:
                     // Last frame!
-                    point = scoreMap.get(frame.charAt(2));
-                    parsedRoll[2] = point;
-                case 2:
-                    point = scoreMap.get(frame.charAt(1));
-                    if (point == 10 && frame.charAt(1) == '/') {
+                    c = frame.charAt(2);
+                    pins = scoreMap.get(c);
+                    if (pins == 10 && c == '/') {
                         spare = true;
                     } else {
-                        parsedRoll[1] = point;
+                        parsedRoll[2] = pins;
                     }
-                case 1:
-                    point = scoreMap.get(frame.charAt(0));
+                case 2:
+                    c = frame.charAt(1);
+                    pins = scoreMap.get(c);
                     if (spare) {
-                        parsedRoll[1] = 10 - point;
+                        parsedRoll[2] = 10 - pins;
+                        spare = false;
+                    } else if (pins == 10 && c == '/') {
+                        spare = true;
                     }
-                    parsedRoll[0] = point;
+                    parsedRoll[1] = pins;
+                case 1:
+                    pins = scoreMap.get(frame.charAt(0));
+                    if (spare) {
+                        parsedRoll[1] = 10 - pins;
+                    }
+                    parsedRoll[0] = pins;
                 default:
                     parsedRolls[index++] = parsedRoll;
                     break;
