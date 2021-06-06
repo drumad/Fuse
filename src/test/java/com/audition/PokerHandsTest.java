@@ -57,13 +57,35 @@ public class PokerHandsTest {
     }
 
     @Test
-    public void isFourOfAKind() {
+    public void test_isFourOfAKind_AAAAQ_true() {
 
+        String[] cards = new String[] {"AC", "AS", "AD", "AH", "QH"};
+
+        assertTrue(pokerHand.isFourOfAKind(cards));
     }
 
     @Test
-    public void isFullHouse() {
+    public void test_isFourOfAKind_QQQKK_false() {
 
+        String[] cards = new String[] {"KH", "KD", "QS", "QH", "QC"};
+
+        assertFalse(pokerHand.isFourOfAKind(cards));
+    }
+
+    @Test
+    public void test_isFullHouse_QQQKK_true() {
+
+        String[] cards = new String[] {"KH", "KD", "QS", "QH", "QC"};
+
+        assertTrue(pokerHand.isFullHouse(cards));
+    }
+
+    @Test
+    public void test_isFullHouse_JJJJT_false() {
+
+        String[] cards = new String[] {"JC", "JS", "JD", "TH", "JH"};
+
+        assertTrue(pokerHand.isFourOfAKind(cards));
     }
 
     @Test
@@ -116,17 +138,50 @@ public class PokerHandsTest {
     }
 
     @Test
-    public void isThreeOfAKind() {
+    public void test_isThreeOfAKind_2A444_true() {
 
+        String[] cards = new String[] {"2H", "AD", "4S", "4D", "4H"};
+
+        assertTrue(pokerHand.isThreeOfAKind(cards));
     }
 
     @Test
-    public void isTwoPair() {
+    public void test_isThreeOfAKind_77766_true() {
 
+        String[] cards = new String[] {"7H", "7D", "6S", "7C", "6D"};
+
+        assertFalse(pokerHand.isThreeOfAKind(cards));
     }
 
     @Test
-    public void isPair() {
+    public void test_isTwoPair_2233A_true() {
 
+        String[] cards = new String[] {"2S", "AH", "3D", "2D", "3C"};
+
+        assertTrue(pokerHand.isTwoPair(cards));
+    }
+
+    @Test
+    public void test_isTwoPair_22233_false() {
+
+        String[] cards = new String[] {"2H", "2C", "3S", "3D", "2C"};
+
+        assertFalse(pokerHand.isTwoPair(cards));
+    }
+
+    @Test
+    public void test_isPair_TTQKA_true() {
+
+        String[] cards = new String[] {"TS", "AH", "QD", "KD", "TC"};
+
+        assertTrue(pokerHand.isPair(cards));
+    }
+
+    @Test
+    public void test_isPair_9TQKA_false() {
+
+        String[] cards = new String[] {"TS", "9H", "QD", "KD", "AC"};
+
+        assertFalse(pokerHand.isPair(cards));
     }
 }

@@ -1,8 +1,7 @@
 package com.audition;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PokerHands {
 
@@ -52,16 +51,20 @@ public class PokerHands {
         suits = new char[] {'C', 'D', 'H', 'S'};
     }
 
-    public Hand determineHand(String[] cards) {
+    public void playPoker() {
 
-        Hand hand = Hand.HIGH_CARD;
-
-        return hand;
     }
 
     public int breakTie(Hand hand, String[] black, String[] white) {
 
         return 0;
+    }
+
+    public Hand determineHand(String[] cards) {
+
+        Hand hand = Hand.HIGH_CARD;
+
+        return hand;
     }
 
     /**
@@ -75,12 +78,12 @@ public class PokerHands {
 
     public boolean isFourOfAKind(String[] cards) {
 
-        return false;
+        return verifyOfAKind(cards, 2, 1, 1);
     }
 
     public boolean isFullHouse(String[] cards) {
 
-        return false;
+        return verifyOfAKind(cards, 2, 1, 2);
     }
 
     public boolean isFlush(String[] cards) {
@@ -111,15 +114,51 @@ public class PokerHands {
 
     public boolean isThreeOfAKind(String[] cards) {
 
-        return false;
+        return verifyOfAKind(cards, 3, 1, 1);
     }
 
     public boolean isTwoPair(String[] cards) {
 
-        return false;
+        return verifyOfAKind(cards, 3, 1, 2);
     }
 
     public boolean isPair(String[] cards) {
+
+        long count = Arrays.stream(cards).mapToInt(c -> pokerMap.get(c.charAt(0))).distinct().count();
+        if (count == cards.length - 1) {
+            return true;
+        }
+        return false;
+    }
+
+    private int[] getValues(String[] cards) {
+
+        return Arrays.stream(cards).mapToInt(c -> pokerMap.get(c.charAt(0))).toArray();
+    }
+
+    private char[] getSuits(String[] cards) {
+
+        return Arrays.stream(cards).map(c -> "" + c.charAt(0)).collect(Collectors.joining()).toUpperCase().toCharArray();
+    }
+
+    private Map<Integer, Long> generateValueMap(String[] cards) {
+
+        int[] values = getValues(cards);
+        return Arrays.stream(values).boxed().collect(Collectors.groupingBy(Integer::intValue, Collectors.counting()));
+
+    }
+
+    private boolean verifyOfAKind(String[] cards, int groupedSize, int remove, int expected) {
+
+        Map<Integer, Long> map = generateValueMap(cards);
+
+        if (map.size() == groupedSize) {
+            map.entrySet().removeIf(e -> e.getValue() == remove);
+
+            if (map.size() == expected) {
+                return true;
+            }
+        }
 
         return false;
     }
