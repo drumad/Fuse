@@ -2,3 +2,12 @@ Black: 2H 3D 5S 9C KD  White: 2C 3H 4S 8C AH
 Black: 2H 4S 4C 2D 4H  White: 2S 8S AS QS 3S
 Black: 2H 3D 5S 9C KD  White: 2C 3H 4S 8C KH
 Black: 2H 3D 5S 9C KD  White: 2D 3H 5C 9S KH
+Black: TC JS JC TD 3H  White: 2S JC JS KS KH
+Black: 4C JC 3C 5C 8C  White: QH TH 3H 2H 4H
+Black: TH QH KH AH JH  White: JC KC TC 9C QC
+Black: 2H 3H 4H 5H 6D  White: 3C 4D 6S 7S 5D
+Black: 9H 7H 8C 5H 6D  White: 3C 4D 6S 8S 5D
+Black: TS TC TH TD 6H  White: AS AH AC KH KD
+Black: AS AH AC KH KD  White: AS AH AC KH KD
+Black: QS QC QH 7D 6H  White: AS AH AC KH QD
+Black: 8C QC KS 8D 2H  White: 2D 8C QS 8S 3D

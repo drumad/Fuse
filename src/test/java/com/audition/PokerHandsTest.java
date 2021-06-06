@@ -5,6 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
@@ -19,13 +22,95 @@ public class PokerHandsTest {
     }
 
     @Test
-    public void determineHand() {
+    public void test_determineHand_straightFlush_23456_true() {
+
+        String[] cards = new String[] {"2H", "3H", "4H", "5H", "6H"};
+
+        assertEquals(PokerHands.Hand.STRAIGHT_FLUSH, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_straightFlush_A2345_false() {
+
+        String[] cards = new String[] {"2C", "3C", "4C", "5C", "AC"};
+
+        assertEquals(PokerHands.Hand.FLUSH, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_fourOfAKind_3333K() {
+
+        String[] cards = new String[] {"3C", "3S", "3H", "3D", "KC"};
+
+        assertEquals(PokerHands.Hand.FOUR_KIND, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_fullHouse_444QQ() {
+
+        String[] cards = new String[] {"4C", "4S", "QH", "4D", "QC"};
+
+        assertEquals(PokerHands.Hand.FULL_HOUSE, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_flush_spades() {
+
+        String[] cards = new String[] {"6S", "4S", "QS", "TS", "8S"};
+
+        assertEquals(PokerHands.Hand.FLUSH, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_straight_89TJQ() {
+
+        String[] cards = new String[] {"8C", "TS", "9H", "QC", "JC"};
+
+        assertEquals(PokerHands.Hand.STRAIGHT, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_threeOfAKind_999KQ() {
+
+        String[] cards = new String[] {"9C", "KS", "QH", "9D", "9H"};
+
+        assertEquals(PokerHands.Hand.THREE_KIND, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_twoPair_33JJ4() {
+
+        String[] cards = new String[] {"4C", "3S", "JH", "3D", "JC"};
+
+        assertEquals(PokerHands.Hand.TWO_PAIR, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_pair_35667() {
+
+        String[] cards = new String[] {"6C", "3S", "5H", "6D", "7C"};
+
+        assertEquals(PokerHands.Hand.PAIR, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_determineHand_highCard_36758() {
+
+        String[] cards = new String[] {"7H", "5H", "6D", "3C", "8S"};
+
+        assertEquals(PokerHands.Hand.HIGH_CARD, pokerHand.determineHand(cards));
+    }
+
+    @Test
+    public void test_breakTie_blackWins() {
+
 
     }
 
     @Test
-    public void breakTie() {
+    public void playPoker() throws IOException {
 
+        pokerHand.playPoker();
     }
 
     @Test
