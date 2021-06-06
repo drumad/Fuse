@@ -368,7 +368,23 @@ public class PokerHandsTest {
     @Test
     public void playPoker() throws IOException {
 
-        pokerHand.playPoker();
+        // Add to the expected lines if more tests are added to the input file.
+        String expected =
+            "White wins. - with high card: Ace\n"
+                + "Black wins. - with full house: 4 over 2\n"
+                + "Black wins. - with high card: 9\n"
+                + "Tie.\n"
+                + "White wins. - with two pair: King and Jack\n"
+                + "White wins. - with flush: Queen of Hearts\n"
+                + "Black wins. - with straight flush: Ace of Hearts\n"
+                + "White wins. - with straight: 7\n"
+                + "Black wins. - with straight: 9\n"
+                + "Black wins. - with four of a kind: 10\n"
+                + "Tie.\n"
+                + "White wins. - with three of a kind: Ace\n"
+                + "Black wins. - with pair: King";
+
+        assertEquals(expected, pokerHand.playPoker());
     }
 
     @Test

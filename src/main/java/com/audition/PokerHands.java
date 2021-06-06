@@ -38,8 +38,9 @@ public class PokerHands {
 
     private Map<Integer, String> cardNames;
 
-    private char[] suits;
-
+    /**
+     * Initializes the maps.
+     */
     public PokerHands() {
 
         pokerMap = new HashMap<>(13);
@@ -77,13 +78,18 @@ public class PokerHands {
         cardNames.put(12, "Queen");
         cardNames.put(13, "King");
         cardNames.put(14, "Ace");
-
-        suits = new char[] {'C', 'D', 'H', 'S'};
     }
 
-    public void playPoker() throws IOException {
+    /**
+     * Reads through the input file and analyzes them.
+     *
+     * @return String of the results after reading and analyzing the input file.
+     * @throws IOException When the file input reader fails.
+     */
+    public String playPoker() throws IOException {
 
         String input = FileReaderUtil.readInputFile().toUpperCase();
+        StringBuffer buffer = new StringBuffer();
 
         String[] lines = input.split("\n");
         String[] blackCards = new String[5];
@@ -147,14 +153,23 @@ public class PokerHands {
             }
 
             if (winner == null && winningHand == null) {
-                System.out.println("Tie.");
+                buffer.append("Tie.").append("\n");
             } else {
-                System.out
-                    .println(winner + " wins. - with " + winningHand.formatted + ": " + wordifyWin(winningHand, winningCards, winningCard));
+                buffer.append(winner).append(" wins. - with ").append(winningHand.formatted).append(": ")
+                      .append(wordifyWin(winningHand, winningCards, winningCard)).append("\n");
             }
         }
+
+        System.out.println(buffer);
+        return buffer.toString().trim();
     }
 
+    /**
+     * Determines what kind of hand the current set of cards are.
+     *
+     * @param cards The cards to analyze.
+     * @return The Hand enum based on the cards passed.
+     */
     public Hand determineHand(String[] cards) {
 
         Hand hand;
@@ -217,6 +232,14 @@ public class PokerHands {
         return 0;
     }
 
+    /**
+     * Analyzes and converts the winning hand, cards, and/or card to a worded format.
+     *
+     * @param winningHand The Hand enum that won the game.
+     * @param cards       The cards of the winning hand.
+     * @param winningCard The card that led the hand to win, this will most likely have a value due to a tie-break.
+     * @return The string format.
+     */
     private String wordifyWin(Hand winningHand, String[] cards, int winningCard) {
 
         StringBuffer buffer = new StringBuffer();
