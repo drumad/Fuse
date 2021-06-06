@@ -102,9 +102,267 @@ public class PokerHandsTest {
     }
 
     @Test
-    public void test_breakTie_blackWins() {
+    public void test_breakTie_straightFlush_black() {
 
+        String[] black = new String[] {"3S", "4S", "5S", "6S", "7S"};
+        String[] white = new String[] {"2H", "3H", "4H", "5H", "6H"};
 
+        assertTrue(pokerHand.isStraightFlush(black));
+        assertTrue(pokerHand.isStraightFlush(white));
+        assertEquals(-7, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_straightFlush_white() {
+
+        String[] black = new String[] {"8S", "9S", "TS", "JS", "QS"};
+        String[] white = new String[] {"TD", "JD", "QD", "KD", "AD"};
+
+        assertTrue(pokerHand.isStraightFlush(black));
+        assertTrue(pokerHand.isStraightFlush(white));
+        assertEquals(14, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_straightFlush_tie() {
+
+        String[] black = new String[] {"5H", "7H", "6H", "9H", "8H"};
+        String[] white = new String[] {"8C", "7C", "5C", "6C", "9C"};
+
+        assertTrue(pokerHand.isStraightFlush(black));
+        assertTrue(pokerHand.isStraightFlush(white));
+        assertEquals(0, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_fourKind_black() {
+
+        String[] black = new String[] {"9H", "9C", "9D", "9C", "6H"};
+        String[] white = new String[] {"2S", "2D", "2H", "7D", "2C"};
+
+        assertTrue(pokerHand.isFourOfAKind(black));
+        assertTrue(pokerHand.isFourOfAKind(white));
+        assertEquals(-9, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_fourKind_white() {
+
+        String[] black = new String[] {"TH", "TC", "TD", "QH", "TS"};
+        String[] white = new String[] {"JC", "2H", "JS", "JD", "JH"};
+
+        assertTrue(pokerHand.isFourOfAKind(black));
+        assertTrue(pokerHand.isFourOfAKind(white));
+        assertEquals(11, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_fourKind_tie() {
+
+        String[] black = new String[] {"8H", "8C", "5D", "8D", "8S"};
+        String[] white = new String[] {"5C", "8H", "8S", "8C", "8D"};
+
+        assertTrue(pokerHand.isFourOfAKind(black));
+        assertTrue(pokerHand.isFourOfAKind(white));
+        assertEquals(0, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_fullHouse_black() {
+
+        String[] black = new String[] {"3H", "3C", "3D", "6C", "6H"};
+        String[] white = new String[] {"2S", "2D", "2H", "7D", "7C"};
+
+        assertTrue(pokerHand.isFullHouse(black));
+        assertTrue(pokerHand.isFullHouse(white));
+        assertEquals(-3, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_fullHouse_white() {
+
+        String[] black = new String[] {"JH", "JC", "QD", "QH", "QS"};
+        String[] white = new String[] {"KC", "2H", "KS", "2S", "KH"};
+
+        assertTrue(pokerHand.isFullHouse(black));
+        assertTrue(pokerHand.isFullHouse(white));
+        assertEquals(13, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_fullHouse_tie() {
+
+        String[] black = new String[] {"5H", "7C", "5D", "7H", "5S"};
+        String[] white = new String[] {"5C", "5H", "7S", "5S", "7H"};
+
+        assertTrue(pokerHand.isFullHouse(black));
+        assertTrue(pokerHand.isFullHouse(white));
+        assertEquals(0, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_flush_black() {
+
+        String[] black = new String[] {"5H", "7H", "JH", "6H", "9H"};
+        String[] white = new String[] {"4C", "5C", "2C", "6C", "7C"};
+
+        assertTrue(pokerHand.isFlush(black));
+        assertTrue(pokerHand.isFlush(white));
+        assertEquals(-11, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_flush_white() {
+
+        String[] black = new String[] {"8S", "9S", "TS", "JS", "2S"};
+        String[] white = new String[] {"TD", "5D", "QD", "KD", "3D"};
+
+        assertTrue(pokerHand.isFlush(black));
+        assertTrue(pokerHand.isFlush(white));
+        assertEquals(13, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_flush_tie() {
+
+        String[] black = new String[] {"3C", "5C", "4C", "AC", "KC"};
+        String[] white = new String[] {"4S", "3S", "5S", "KS", "AS"};
+
+        assertTrue(pokerHand.isFlush(black));
+        assertTrue(pokerHand.isFlush(white));
+        assertEquals(0, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_straight_black() {
+
+        String[] black = new String[] {"5H", "7C", "8D", "6H", "9S"};
+        String[] white = new String[] {"4C", "5H", "3S", "6S", "7H"};
+
+        assertTrue(pokerHand.isStraight(black));
+        assertTrue(pokerHand.isStraight(white));
+        assertEquals(-9, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_straight_white() {
+
+        String[] black = new String[] {"8H", "9C", "TC", "JS", "QD"};
+        String[] white = new String[] {"TC", "JH", "QC", "KD", "AH"};
+
+        assertTrue(pokerHand.isStraight(black));
+        assertTrue(pokerHand.isStraight(white));
+        assertEquals(14, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_straight_tie() {
+
+        String[] black = new String[] {"TH", "JC", "QS", "KS", "AD"};
+        String[] white = new String[] {"TD", "JH", "QD", "KC", "AC"};
+
+        assertTrue(pokerHand.isStraight(black));
+        assertTrue(pokerHand.isStraight(white));
+        assertEquals(0, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_threeKind_black() {
+
+        String[] black = new String[] {"4H", "4C", "KD", "4H", "6S"};
+        String[] white = new String[] {"3C", "QH", "3S", "AS", "3H"};
+
+        assertTrue(pokerHand.isThreeOfAKind(black));
+        assertTrue(pokerHand.isThreeOfAKind(white));
+        assertEquals(-4, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_threeKind_white() {
+
+        String[] black = new String[] {"5H", "2C", "5C", "5S", "4D"};
+        String[] white = new String[] {"7C", "7H", "2C", "5D", "7H"};
+
+        assertTrue(pokerHand.isThreeOfAKind(black));
+        assertTrue(pokerHand.isThreeOfAKind(white));
+        assertEquals(7, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_threeKind_tie() {
+
+        String[] black = new String[] {"JH", "9C", "JS", "TS", "JD"};
+        String[] white = new String[] {"9D", "JH", "JS", "JC", "TC"};
+
+        assertTrue(pokerHand.isThreeOfAKind(black));
+        assertTrue(pokerHand.isThreeOfAKind(white));
+        assertEquals(0, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_twoPair_black() {
+
+        String[] black = new String[] {"2H", "2C", "KD", "KH", "6S"};
+        String[] white = new String[] {"JC", "QH", "QS", "AS", "JH"};
+
+        assertTrue(pokerHand.isTwoPair(black));
+        assertTrue(pokerHand.isTwoPair(white));
+        assertEquals(-13, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_twoPair_white() {
+
+        String[] black = new String[] {"3H", "2C", "2S", "3S", "4D"};
+        String[] white = new String[] {"3C", "3H", "2C", "5S", "2H"};
+
+        assertTrue(pokerHand.isTwoPair(black));
+        assertTrue(pokerHand.isTwoPair(white));
+        assertEquals(5, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_twoPair_tie() {
+
+        String[] black = new String[] {"AH", "TC", "QS", "TS", "AD"};
+        String[] white = new String[] {"AC", "TH", "QD", "TD", "AC"};
+
+        assertTrue(pokerHand.isTwoPair(black));
+        assertTrue(pokerHand.isTwoPair(white));
+        assertEquals(0, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_pair_black() {
+
+        String[] black = new String[] {"AH", "TC", "QS", "TS", "4D"};
+        String[] white = new String[] {"3C", "6H", "3S", "AS", "2H"};
+
+        assertTrue(pokerHand.isPair(black));
+        assertTrue(pokerHand.isPair(white));
+        assertEquals(-10, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_pair_white() {
+
+        String[] black = new String[] {"AH", "TC", "QS", "TS", "4D"};
+        String[] white = new String[] {"3C", "6H", "AC", "AS", "2H"};
+
+        assertTrue(pokerHand.isPair(black));
+        assertTrue(pokerHand.isPair(white));
+        assertEquals(14, pokerHand.breakTie(black, white));
+    }
+
+    @Test
+    public void test_breakTie_pair_tie() {
+
+        String[] black = new String[] {"AH", "TC", "QS", "TS", "4D"};
+        String[] white = new String[] {"AC", "TH", "QD", "TD", "4C"};
+
+        assertTrue(pokerHand.isPair(black));
+        assertTrue(pokerHand.isPair(white));
+        assertEquals(0, pokerHand.breakTie(black, white));
     }
 
     @Test

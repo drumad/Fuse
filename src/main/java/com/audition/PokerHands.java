@@ -138,6 +138,7 @@ public class PokerHands {
                     winner = "Black";
                     winningHand = bHand;
                     winningCards = blackCards;
+                    winningCard = Math.abs(winningCard);
                 } else if (winningCard > 0) {
                     winner = "White";
                     winningHand = wHand;
@@ -148,8 +149,8 @@ public class PokerHands {
             if (winner == null && winningHand == null) {
                 System.out.println("Tie.");
             } else {
-                System.out.println(winner + " wins. - with " + winningHand.formatted + ": " + wordifyWin(winningHand, winningCards,
-                    Math.abs(winningCard)));
+                System.out
+                    .println(winner + " wins. - with " + winningHand.formatted + ": " + wordifyWin(winningHand, winningCards, winningCard));
             }
         }
     }
@@ -186,7 +187,10 @@ public class PokerHands {
      *
      * @param black Array of cards of one player.
      * @param white Array of cards of the other player.
-     * @return Will return the value of the winning card. A negative value means the first player (param) won,
+     * @return Will return the value of the winning card.
+     * A negative value means the first player won;
+     * second player if positive.
+     * If value is 0, it's still a tie.
      */
     public int breakTie(String[] black, String[] white) {
 
@@ -273,24 +277,44 @@ public class PokerHands {
     }
 
     /**
-     * @param cards
-     * @return
+     * Checks a hand is a straight flush
+     *
+     * @param cards The hand to check.
+     * @return True if it's a straight flush. False if otherwise.
      */
     public boolean isStraightFlush(String[] cards) {
 
         return isStraight(cards) && isFlush(cards);
     }
 
+    /**
+     * Checks a hand has a four of a kind.
+     *
+     * @param cards The hand to check.
+     * @return True if it has a four of a kind. False if otherwise.
+     */
     public boolean isFourOfAKind(String[] cards) {
 
-        return verifyOfAKind(cards, 2, 1, 1);
+        return verifyOfAKind(cards, 2, 1);
     }
 
+    /**
+     * Checks a hand is a full house.
+     *
+     * @param cards The hand to check.
+     * @return True if a full house. False if otherwise.
+     */
     public boolean isFullHouse(String[] cards) {
 
-        return verifyOfAKind(cards, 2, 1, 2);
+        return verifyOfAKind(cards, 2, 2);
     }
 
+    /**
+     * Checks a hand is a flush.
+     *
+     * @param cards The hand to check.
+     * @return True if a flush. False if otherwise.
+     */
     public boolean isFlush(String[] cards) {
 
         char firstSuit = cards[0].charAt(1);
@@ -298,9 +322,17 @@ public class PokerHands {
         return Arrays.stream(cards).allMatch(c -> c.charAt(1) == firstSuit);
     }
 
+    /**
+     * Checks a hand is a straight.
+     *
+     * @param cards The hand to check.
+     * @return True if a straight. False if otherwise.
+     */
     public boolean isStraight(String[] cards) {
 
+        // We are counting the number of distinct cards.
         long count = Arrays.stream(cards).mapToInt(c -> pokerMap.get(c.charAt(0))).distinct().count();
+
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
 
@@ -317,35 +349,56 @@ public class PokerHands {
         return false;
     }
 
+    /**
+     * Checks a hand has a three of a kind.
+     *
+     * @param cards The hand to check.
+     * @return True if hand has a three of a kind. False if otherwise.
+     */
     public boolean isThreeOfAKind(String[] cards) {
 
-        return verifyOfAKind(cards, 3, 1, 1);
+        return verifyOfAKind(cards, 3, 1);
     }
 
+    /**
+     * Checks a hand has a two pair.
+     *
+     * @param cards The hand to check.
+     * @return True if it has a two-pair. False if otherwise.
+     */
     public boolean isTwoPair(String[] cards) {
 
-        return verifyOfAKind(cards, 3, 1, 2);
+        return verifyOfAKind(cards, 3, 2);
     }
 
+    /**
+     * Checks if the hand is a pair.
+     *
+     * @param cards The hand to check.
+     * @return True if it has a pair. False if otherwise.
+     */
     public boolean isPair(String[] cards) {
 
-        long count = Arrays.stream(cards).mapToInt(c -> pokerMap.get(c.charAt(0))).distinct().count();
-        if (count == cards.length - 1) {
-            return true;
-        }
-        return false;
+        return verifyOfAKind(cards, 4, 1);
     }
 
+    /**
+     * Gets the values of the cards.
+     *
+     * @param cards The cards to determine the values.
+     * @return The int array of the values will be returned.
+     */
     private int[] getValues(String[] cards) {
 
         return Arrays.stream(cards).mapToInt(c -> pokerMap.get(c.charAt(0))).toArray();
     }
 
-    private char[] getSuits(String[] cards) {
-
-        return Arrays.stream(cards).map(c -> "" + c.charAt(0)).collect(Collectors.joining()).toUpperCase().toCharArray();
-    }
-
+    /**
+     * Generates a value map based on the cards passed.
+     *
+     * @param cards The cards to determine map.
+     * @return The returned map will have the value as key, and its occurrences as its value.
+     */
     private Map<Integer, Long> generateValueMap(String[] cards) {
 
         int[] values = getValues(cards);
@@ -353,12 +406,24 @@ public class PokerHands {
 
     }
 
-    private boolean verifyOfAKind(String[] cards, int groupedSize, int remove, int expected) {
+    /**
+     * Verifies the type of card combination the hand is. This will be used to check for four of a kind, full house,
+     * three of a kind, two pair, and pair.
+     *
+     * @param cards       The hand to analyze.
+     * @param groupedSize Expected size after being grouped by value.
+     *                    For example, if we're expecting a pair: a hand of 5, should have 4 groups.
+     * @param expected    The expected number of groups after ignoring the single-occurrence cards.
+     * @return True if groupedSize and expected sizes are met.
+     */
+    private boolean verifyOfAKind(String[] cards, int groupedSize, int expected) {
 
         Map<Integer, Long> map = generateValueMap(cards);
 
         if (map.size() == groupedSize) {
-            map.entrySet().removeIf(e -> e.getValue() == remove);
+
+            // Remove single-occurrence cards
+            map.entrySet().removeIf(e -> e.getValue() == 1);
 
             if (map.size() == expected) {
                 return true;
@@ -369,7 +434,10 @@ public class PokerHands {
     }
 
     /**
-     * @return
+     * Gets the highest card from the array of String cards.
+     *
+     * @param cards The array of cards to analyze.
+     * @return The value of the highest card.
      */
     private int getHighestCard(String[] cards) {
 
@@ -379,8 +447,12 @@ public class PokerHands {
     }
 
     /**
-     * @param cards
-     * @return
+     * The organization is as follows:<br>
+     * 1. Order by most occurrences to least, and<br>
+     * 2. Arrange by their values.<br>
+     *
+     * @param cards The cards to reorganize.
+     * @return An int array of the organized cards, without duplicates.
      */
     private int[] organizeCards(String[] cards) {
 
