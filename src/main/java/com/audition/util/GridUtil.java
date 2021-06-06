@@ -60,7 +60,8 @@ public class GridUtil {
             cells[i] = new char[x];
             row = split[index++].toCharArray();
 
-            // If a row in the text field has more than the expected characters, it should only take the /x/ number of rows.
+            // If a row in the text field has more than the expected characters,
+            // it should only take the /x/ number of characters.
             for (int j = 0; j < x; j++) {
                 cells[i][j] = row[j];
             }
