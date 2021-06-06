@@ -40,7 +40,7 @@ public class GameOfLife {
                         buffer.append('.');
                     }
 
-                // Will the cell resurrect
+                    // Will the cell resurrect
                 } else {
 
                     if (live == 3) {
@@ -73,34 +73,20 @@ public class GameOfLife {
 
         String[] split = input.split("[ \n]");
         char[][] cells;
-        int y;
-        int x;
         int index = 0;
         int generation = 1;
         String output = "";
 
         while (true) {
-            y = Integer.parseInt(split[index++]);
-            x = Integer.parseInt(split[index++]);
+            cells = GridUtil.convertToGrid(split, index);
 
-            if (y == 0 || x == 0) {
+            if (cells == null) {
                 break;
             }
 
-            cells = new char[y][];
-            char[] row;
+            index += cells.length + 2;
 
-            for (int i = 0; i < y; i++) {
-                cells[i] = new char[x];
-                row = split[index++].toCharArray();
-
-                // If a row in the text field has more than the expected characters, it should only take the /x/ number of rows.
-                for (int j = 0; j < x; j++) {
-                    cells[i][j] = row[j];
-                }
-            }
-
-            output = "Generation " + ++generation + ":\n" + y + " " + x + "\n" + gameOfLife(cells);
+            output = "Generation " + ++generation + ":\n" + cells.length + " " + cells[0].length + "\n" + gameOfLife(cells);
             System.out.println(output + "\n");
         }
 

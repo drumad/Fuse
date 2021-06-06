@@ -44,31 +44,19 @@ public class Minesweeper {
         char[][] cells;
         int fields = 0;
         int index = 0;
-        int y;
-        int x;
 
         while (true) {
-            y = Integer.parseInt(split[index++]);
-            x = Integer.parseInt(split[index++]);
+            cells = GridUtil.convertToGrid(split, index);
 
-            if (y == 0 || x == 0) {
+            if (cells == null) {
                 break;
             }
 
-            cells = new char[y][];
-            char[] row;
+            index += cells.length + 2;
 
-            for (int i = 0; i < y; i++) {
-                cells[i] = new char[x];
-                row = split[index++].toCharArray();
 
-                // If a row in the text field has more than the expected characters, it should only take the /x/ number of rows.
-                for (int j = 0; j < x; j++) {
-                    cells[i][j] = row[j];
-                }
-            }
 
-            String output = "Field #" + ++fields + ":\n" + y + " " + x + "\n" + sweepMines(cells);
+            String output = "Field #" + ++fields + ":\n" + cells.length + " " + cells[0].length + "\n" + sweepMines(cells);
             System.out.println(output + "\n");
         }
     }

@@ -44,33 +44,25 @@ public class GridUtil {
         return true;
     }
 
-    public static char[][] convertToGrid(String lines) {
+    public static char[][] convertToGrid(String[] split, int index) {
 
-        String[] split = lines.split("[ \n]");
-        char[][] cells = null;
-        int y;
-        int x;
-        int index = 0;
+        int y = Integer.parseInt(split[index++]);
+        int x = Integer.parseInt(split[index++]);
 
-        while (true) {
-            y = Integer.parseInt(split[index++]);
-            x = Integer.parseInt(split[index++]);
+        if (y == 0 || x == 0) {
+            return null;
+        }
 
-            if (y == 0 || x == 0) {
-                break;
-            }
+        char[][] cells = new char[y][];
+        char[] row;
 
-            cells = new char[y][];
-            char[] row;
+        for (int i = 0; i < y; i++) {
+            cells[i] = new char[x];
+            row = split[index++].toCharArray();
 
-            for (int i = 0; i < y; i++) {
-                cells[i] = new char[x];
-                row = split[index++].toCharArray();
-
-                // If a row in the text field has more than the expected characters, it should only take the /x/ number of rows.
-                for (int j = 0; j < x; j++) {
-                    cells[i][j] = row[j];
-                }
+            // If a row in the text field has more than the expected characters, it should only take the /x/ number of rows.
+            for (int j = 0; j < x; j++) {
+                cells[i][j] = row[j];
             }
         }
 
