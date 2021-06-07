@@ -22,8 +22,13 @@ public class TexasHoldEmTest {
     public void playTexasHoldEm() throws IOException {
 
         String expected =
-            "Kc 9s Ks Kd 9d 3c 6d Full House (winner)\n" + "9c Ah Ks Kd 9d 3c 6d Two Pair\n" + "Ac Qc Ks Kd 9d 3c \n" + "9h 5s \n"
-                + "4d 2d Ks Kd 9d 3c 6d Flush\n" + "7s Ts Ks Kd 9d";
+            "Kc 9s Ks Kd 9d 3c 6d Full House\n"
+                + "9c Ah Ks Kd 9d 3c 6d Two Pair\n"
+                + "Ac Qc Ks Kd 9d 3c\n"
+                + "9h 5s\n"
+                + "4d 2d Ks Kd 9d 3c 6d Flush\n"
+                + "7s Ts Ks Kd 9d\n"
+                + "Ac 9s As Ad 9d 3c 6d Full House (winner)";
 
         assertEquals(expected, texasHoldEm.playTexasHoldEm());
     }

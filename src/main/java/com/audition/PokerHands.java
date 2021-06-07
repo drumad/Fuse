@@ -214,8 +214,8 @@ public class PokerHands {
         int highestBlack = -1;
         int highestWhite = -1;
 
-        int[] sumsBlack = organizeCardsValueKey(black);
-        int[] sumsWhite = organizeCardsValueKey(white);
+        int[] sumsBlack = organizeCardsValueKey(Arrays.copyOfRange(black, 0, 5));
+        int[] sumsWhite = organizeCardsValueKey(Arrays.copyOfRange(white, 0, 5));
 
         for (int i = 0; i < sumsBlack.length; i++) {
             if (sumsBlack[i] > sumsWhite[i]) {
@@ -314,6 +314,7 @@ public class PokerHands {
             System.arraycopy(cards, i, temp, 0, 5);
 
             if (isStraight(temp) && isFlush(temp)) {
+                System.arraycopy(temp, 0, cards, 0, 5);
                 return true;
             }
         }
@@ -334,6 +335,7 @@ public class PokerHands {
             System.arraycopy(cards, i, temp, 0, 5);
 
             if (verifyOfAKind(temp, 2, 1)) {
+                System.arraycopy(temp, 0, cards, 0, 5);
                 return true;
             }
         }
@@ -354,6 +356,7 @@ public class PokerHands {
             System.arraycopy(cards, i, temp, 0, 5);
 
             if (verifyOfAKind(temp, 2, 2)) {
+                System.arraycopy(temp, 0, cards, 0, 5);
                 return true;
             }
         }
@@ -378,6 +381,7 @@ public class PokerHands {
             char firstSuit = temp[0].charAt(1);
 
             if (Arrays.stream(temp).allMatch(c -> c.charAt(1) == firstSuit)) {
+                System.arraycopy(temp, 0, cards, 0, 5);
                 return true;
             }
         }
@@ -396,10 +400,10 @@ public class PokerHands {
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
 
-        for (int i = 0; i < cards.length - 4; i++) {
+        for (int i = cards.length-4; i > 0; i--) {
 
             String[] temp = new String[5];
-            System.arraycopy(cards, i, temp, 0, 5);
+            System.arraycopy(cards, i-1, temp, 0, 5);
 
             // We are counting the number of distinct cards.
             long count = Arrays.stream(temp).mapToInt(c -> pokerMap.get(c.charAt(0))).distinct().count();
@@ -415,6 +419,7 @@ public class PokerHands {
             }
 
             if (max - min + 1 == temp.length) {
+                System.arraycopy(temp, 0, cards, 0, 5);
                 return true;
             }
         }

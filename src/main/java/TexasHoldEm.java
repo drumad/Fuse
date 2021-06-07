@@ -61,11 +61,11 @@ public class TexasHoldEm extends PokerHands {
                         winners.add(highest);
                         winners.add(index);
                     } else if (compare < 0) {
+                        // current card wins
+                        winners.clear();
                         winners.add(index);
                         highest = index;
                         highestCards = cards;
-                    } else if (compare > 0) {
-                        winners.add(highest);
                     }
                 }
             } else {
@@ -79,7 +79,12 @@ public class TexasHoldEm extends PokerHands {
             String player = lines[i];
             Hand hand = hands.get(i);
 
-            buffer.append(player).append(" ").append(hand == null ? "" : WordUtils.capitalizeFully(hand.formatted));
+            buffer.append(player);
+
+            if (hand != null) {
+                buffer.append(" ").append(WordUtils.capitalizeFully(hand.formatted));
+            }
+
             if (winners.contains(i)) {
                 buffer.append(" ").append("(winner)");
             }
