@@ -1,4 +1,5 @@
-import com.audition.PokerHands;
+package com.audition;
+
 import com.audition.util.FileReaderUtil;
 import org.apache.commons.text.WordUtils;
 
