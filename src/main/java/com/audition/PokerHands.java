@@ -369,13 +369,15 @@ public class PokerHands {
      */
     public boolean isFlush(String[] cards) {
 
-        for (int i = 0; i < cards.length - 4; i++) {
+        String[] sorted = Arrays.stream(cards).sorted(Comparator.comparingInt(e -> e.charAt(1))).toArray(String[]::new);
+
+        for (int i = 0; i < sorted.length - 4; i++) {
             String[] temp = new String[5];
-            System.arraycopy(cards, i, temp, 0, 5);
+            System.arraycopy(sorted, i, temp, 0, 5);
 
             char firstSuit = temp[0].charAt(1);
 
-            if (Arrays.stream(cards).allMatch(c -> c.charAt(1) == firstSuit)) {
+            if (Arrays.stream(temp).allMatch(c -> c.charAt(1) == firstSuit)) {
                 return true;
             }
         }

@@ -1,9 +1,12 @@
 import com.audition.PokerHands;
 import com.audition.util.FileReaderUtil;
+import org.apache.commons.text.WordUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TexasHoldEm extends PokerHands {
 
@@ -19,8 +22,8 @@ public class TexasHoldEm extends PokerHands {
 
         List<String> players = new ArrayList<>();
         List<Hand> hands = new ArrayList<>();
-        List<Integer> winners = new ArrayList<>();
-        String[] lines = input.toUpperCase().split("\n");
+        Set<Integer> winners = new HashSet<>();
+        String[] lines = input.split("\n");
 
         Hand highestHand = null;
         String[] highestCards = null;
@@ -29,7 +32,7 @@ public class TexasHoldEm extends PokerHands {
 
         for (String line : lines) {
 
-            String[] cards = line.split(" ");
+            String[] cards = line.toUpperCase().split(" ");
             players.add(line);
 
             if (cards.length == 7) {
@@ -52,7 +55,6 @@ public class TexasHoldEm extends PokerHands {
                     highestCards = cards;
                 } else if (currHand.rank == highestHand.rank) {
 
-                    winners.clear();
                     int compare = breakTie(cards, highestCards);
                     if (compare == 0) {
                         // tied
@@ -73,15 +75,12 @@ public class TexasHoldEm extends PokerHands {
             index++;
         }
 
-        index = 0;
-
         for (int i = 0; i < players.size(); i++) {
-            String player = players.get(i);
+            String player = lines[i];
             Hand hand = hands.get(i);
 
-            buffer.append(player).append(" ").append(hand == null ? "" : hand.formatted);
-
-            if (i == winners.get(index)) {
+            buffer.append(player).append(" ").append(hand == null ? "" : WordUtils.capitalizeFully(hand.formatted));
+            if (winners.contains(i)) {
                 buffer.append(" ").append("(winner)");
             }
 
