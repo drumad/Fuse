@@ -1,8 +1,11 @@
+import com.audition.PokerHands;
 import com.audition.util.FileReaderUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TexasHoldEm {
+public class TexasHoldEm extends PokerHands {
 
     /**
      * Reads through the input file.
@@ -14,19 +17,75 @@ public class TexasHoldEm {
         StringBuffer buffer = new StringBuffer();
         String input = FileReaderUtil.readInputFile();
 
+        List<String> players = new ArrayList<>();
+        List<Hand> hands = new ArrayList<>();
+        List<Integer> winners = new ArrayList<>();
         String[] lines = input.toUpperCase().split("\n");
+
+        Hand highestHand = null;
+        String[] highestCards = null;
+        int highest = -1;
+        int index = 0;
 
         for (String line : lines) {
 
-            String[] hand = line.split(" ");
+            String[] cards = line.split(" ");
+            players.add(line);
 
-            if (hand.length == 7) {
+            if (cards.length == 7) {
                 // Played until the end.
+                Hand currHand = determineHand(cards);
+                hands.add(currHand);
 
+                if (highestHand == null) {
+                    highestHand = currHand;
+                    highest = index;
+                    highestCards = cards;
+
+                    winners.add(index);
+                } else if (currHand.rank > highestHand.rank) {
+                    winners.clear();
+                    winners.add(index);
+
+                    highestHand = currHand;
+                    highest = index;
+                    highestCards = cards;
+                } else if (currHand.rank == highestHand.rank) {
+
+                    winners.clear();
+                    int compare = breakTie(cards, highestCards);
+                    if (compare == 0) {
+                        // tied
+                        winners.add(highest);
+                        winners.add(index);
+                    } else if (compare < 0) {
+                        winners.add(index);
+                        highest = index;
+                        highestCards = cards;
+                    } else if (compare > 0) {
+                        winners.add(highest);
+                    }
+                }
             } else {
-                // folded
-
+                hands.add(null);
             }
+
+            index++;
+        }
+
+        index = 0;
+
+        for (int i = 0; i < players.size(); i++) {
+            String player = players.get(i);
+            Hand hand = hands.get(i);
+
+            buffer.append(player).append(" ").append(hand == null ? "" : hand.formatted);
+
+            if (i == winners.get(index)) {
+                buffer.append(" ").append("(winner)");
+            }
+
+            buffer.append("\n");
         }
 
         return buffer.toString().trim();
