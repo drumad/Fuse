@@ -34,6 +34,12 @@ public class Bowling {
         scoreMap.put('/', 10);
     }
 
+    /**
+     * Calculates the score of a game.
+     *
+     * @param rolls The array of rolls to calculate.
+     * @return The int value of the total score.
+     */
     public int getScore(int[][] rolls) {
 
         boolean spare = false;
@@ -97,8 +103,6 @@ public class Bowling {
                                     // Turkey!
                                     if (frame == 9) {
                                         score[frame - 1] += roll;
-                                    } else {
-                                        score[frame - 2] += roll;
                                     }
                                 }
                             }
