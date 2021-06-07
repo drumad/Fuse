@@ -174,6 +174,8 @@ public class PokerHands {
 
         Hand hand;
 
+        Arrays.sort(cards);
+
         if (isStraightFlush(cards)) {
             hand = Hand.STRAIGHT_FLUSH;
         } else if (isFourOfAKind(cards)) {
@@ -212,8 +214,8 @@ public class PokerHands {
         int highestBlack = -1;
         int highestWhite = -1;
 
-        int[] sumsBlack = organizeCards(black);
-        int[] sumsWhite = organizeCards(white);
+        int[] sumsBlack = organizeCardsValueKey(black);
+        int[] sumsWhite = organizeCardsValueKey(white);
 
         for (int i = 0; i < sumsBlack.length; i++) {
             if (sumsBlack[i] > sumsWhite[i]) {
@@ -307,7 +309,16 @@ public class PokerHands {
      */
     public boolean isStraightFlush(String[] cards) {
 
-        return isStraight(cards) && isFlush(cards);
+        for (int i = 0; i < cards.length - 4; i++) {
+            String[] temp = new String[5];
+            System.arraycopy(cards, i, temp, 0, 5);
+
+            if (isStraight(temp) && isFlush(temp)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -318,7 +329,16 @@ public class PokerHands {
      */
     public boolean isFourOfAKind(String[] cards) {
 
-        return verifyOfAKind(cards, 2, 1);
+        for (int i = 0; i < cards.length - 4; i++) {
+            String[] temp = new String[5];
+            System.arraycopy(cards, i, temp, 0, 5);
+
+            if (verifyOfAKind(temp, 2, 1)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -329,7 +349,16 @@ public class PokerHands {
      */
     public boolean isFullHouse(String[] cards) {
 
-        return verifyOfAKind(cards, 2, 2);
+        for (int i = 0; i < cards.length - 4; i++) {
+            String[] temp = new String[5];
+            System.arraycopy(cards, i, temp, 0, 5);
+
+            if (verifyOfAKind(temp, 2, 2)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -340,9 +369,18 @@ public class PokerHands {
      */
     public boolean isFlush(String[] cards) {
 
-        char firstSuit = cards[0].charAt(1);
+        for (int i = 0; i < cards.length - 4; i++) {
+            String[] temp = new String[5];
+            System.arraycopy(cards, i, temp, 0, 5);
 
-        return Arrays.stream(cards).allMatch(c -> c.charAt(1) == firstSuit);
+            char firstSuit = temp[0].charAt(1);
+
+            if (Arrays.stream(cards).allMatch(c -> c.charAt(1) == firstSuit)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -353,21 +391,30 @@ public class PokerHands {
      */
     public boolean isStraight(String[] cards) {
 
-        // We are counting the number of distinct cards.
-        long count = Arrays.stream(cards).mapToInt(c -> pokerMap.get(c.charAt(0))).distinct().count();
-
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
 
-        for (String card : cards) {
+        for (int i = 0; i < cards.length - 4; i++) {
 
-            int val = pokerMap.get(card.charAt(0));
-            min = Integer.min(min, val);
-            max = Integer.max(max, val);
-        }
+            String[] temp = new String[5];
+            System.arraycopy(cards, i, temp, 0, 5);
 
-        if (count == cards.length && max - min + 1 == count) {
-            return true;
+            // We are counting the number of distinct cards.
+            long count = Arrays.stream(temp).mapToInt(c -> pokerMap.get(c.charAt(0))).distinct().count();
+
+            if (count < temp.length) {
+                continue;
+            }
+
+            for (String card : temp) {
+                int val = pokerMap.get(card.charAt(0));
+                min = Integer.min(min, val);
+                max = Integer.max(max, val);
+            }
+
+            if (max - min + 1 == temp.length) {
+                return true;
+            }
         }
         return false;
     }
@@ -380,7 +427,7 @@ public class PokerHands {
      */
     public boolean isThreeOfAKind(String[] cards) {
 
-        return verifyOfAKind(cards, 3, 1);
+        return verifyOfAKind(cards, cards.length - 2, 1);
     }
 
     /**
@@ -391,7 +438,7 @@ public class PokerHands {
      */
     public boolean isTwoPair(String[] cards) {
 
-        return verifyOfAKind(cards, 3, 2);
+        return verifyOfAKind(cards, cards.length - 2, 2);
     }
 
     /**
@@ -402,7 +449,7 @@ public class PokerHands {
      */
     public boolean isPair(String[] cards) {
 
-        return verifyOfAKind(cards, 4, 1);
+        return verifyOfAKind(cards, cards.length - 1, 1);
     }
 
     /**
@@ -477,7 +524,7 @@ public class PokerHands {
      * @param cards The cards to reorganize.
      * @return An int array of the organized cards, without duplicates.
      */
-    private int[] organizeCards(String[] cards) {
+    private int[] organizeCardsValueKey(String[] cards) {
 
         Map<Integer, Long> map = generateValueMap(cards);
 
@@ -487,5 +534,4 @@ public class PokerHands {
         return map.entrySet().stream().sorted(compareByValue.thenComparing(Map.Entry::getKey).reversed()).map(e -> e.getKey())
                   .mapToInt(Integer::intValue).toArray();
     }
-
 }
